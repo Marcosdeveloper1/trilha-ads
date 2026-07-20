@@ -174,64 +174,24 @@
   <div class="loading">Carregando trilha…</div>
 </div>
 
-<script>
-const MODULES = [
-  {id:1, name:"Ponteiros & Structs", disciplina:"Estrutura de Dados (C)",
-    topics:["Ponteiros em C (& e *, por que existem)","Structs em C","Structs aninhadas, vetores de structs e typedef"],
-    desafio:"Agenda de contatos em C usando vetor de structs (sem lista ligada ainda)."},
-  {id:2, name:"Modularização", disciplina:"Estrutura de Dados (C)",
-    topics:["Funções, escopo local e global","Passagem de parâmetro por valor","Passagem de parâmetro por referência"],
-    desafio:"Refatorar a Agenda do Módulo 1 separando em funções: cadastrar(), listar(), buscar()."},
-  {id:3, name:"Listas, Pilhas e Filas", disciplina:"Estrutura de Dados (C)",
-    topics:["Alocação dinâmica e encadeamento (malloc/free)","Lista ligada simples","Pilha: push/pop","Fila: enqueue/dequeue"],
-    desafio:"Sistema de fila de atendimento em C (FIFO) — núcleo do projeto guarda-chuva."},
-  {id:4, name:"Ordenação", disciplina:"Estrutura de Dados (C)",
-    topics:["Bubble sort (bolha)","Insertion sort e Selection sort"],
-    desafio:"Ordenar a fila de atendimento por prioridade."},
-  {id:5, name:"Árvores", disciplina:"Estrutura de Dados (C)",
-    topics:["Conceitos, propriedades e termos de árvores","Árvores binárias","Árvores de busca (BST)"],
-    desafio:"Índice de busca rápida por ID usando BST."},
-  {id:6, name:"Modelagem de Banco", disciplina:"Banco de Dados",
-    topics:["Histórico, SBD x SGBD","Modelagem conceitual (DER)","Modelagem lógica/física e normalização"],
-    desafio:"Modelar o banco do sistema de tickets (usuários, tickets, status, histórico)."},
-  {id:7, name:"PostgreSQL na prática", disciplina:"Banco de Dados",
-    topics:["DDL: criar e alterar tabelas","DML: insert/update/delete e transações","SELECT, WHERE e agrupamento","JOINs, subconsultas e operadores de conjunto"],
-    desafio:"Implementar o banco modelado + 10 queries reais (tickets por prioridade, tempo médio, etc)."},
-  {id:8, name:"HTML & CSS", disciplina:"Dev Web",
-    topics:["Estrutura de página e formulários","CSS: box model e posicionamento","CSS: pseudoclasses, pseudo-elementos e frameworks"],
-    desafio:"Tela de abertura de ticket + painel de listagem (interface, sem lógica ainda)."},
-  {id:9, name:"JavaScript", disciplina:"Dev Web",
-    topics:["Decisão e repetição em JS","Vetores em JS","AJAX e JSON"],
-    desafio:"Validação de formulário + requisição AJAX simulada."},
-  {id:10, name:"PHP + PDO", disciplina:"Dev Web",
-    topics:["PHP básico e estruturas","Vetores e funções em PHP","Classe PDO e seus métodos","Integração HTML + PHP + banco"],
-    desafio:"Sistema de tickets funcional: cadastro, fila, ordenação por prioridade, busca. Projeto principal do semestre."},
-  {id:11, name:"Paradigmas & Python Básico", disciplina:"Paradigmas (Python)",
-    topics:["Categorias de linguagens e paradigmas","Tipos, expressões e atribuições em Python"],
-    desafio:"Reimplementar a fila de atendimento (Módulo 3) em Python — comparar com a versão em C."},
-  {id:12, name:"Python Estruturado", disciplina:"Paradigmas (Python)",
-    topics:["Subprogramas e modularização em Python"],
-    desafio:"Script utilitário: gerador de relatório CSV a partir do banco de tickets."},
-  {id:13, name:"Python Orientado a Objetos", disciplina:"Paradigmas (Python)",
-    topics:["Classes e objetos","Encapsulamento"],
-    desafio:"Modelar Ticket, Usuario e FilaAtendimento como classes — comparar com as structs do Módulo 1."},
-  {id:14, name:"Projeto Final & Revisão", disciplina:"Integração geral",
-    topics:["Integrar frontend + backend + banco","Testar manualmente o fluxo completo","Documentar o projeto (README)","Simulado de entrevista técnica sobre o projeto"],
-    desafio:"Publicar o projeto no GitHub com README completo — peça de portfólio pronta."}
-];
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-const ARCH_CICLOS = [
-  "Fundamentos e Evolução Computacional — história, hardware x software, SO como interface.",
-  "Von Neumann — CPU, ULA, Unidade de Controle.",
-  "Processamento, memória e I/O — ciclo de busca/execução, hierarquia de memória.",
-  "Representação numérica — bit, byte, palavra, sistemas de numeração.",
-  "Conversão de bases e codificação — ASCII, Unicode.",
-  "Lógica digital — álgebra booleana, tabelas-verdade.",
-  "Circuitos lógicos — portas, circuitos combinacionais.",
-  "Processamento paralelo e HPC — taxonomia de Flynn.",
-  "Métricas de desempenho — Lei de Amdahl, clock, IPC.",
-  "RISC x CISC — comparativo e aplicações reais (ARM vs x86)."
-];
+<script>
+// INSIRA OS SEUS DADOS COPIADOS DO PASSO 1 AQUI:
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY_AQUI",
+  authDomain: "trila-ads.firebaseapp.com",
+  databaseURL: "https://trila-ads-default-rtdb.firebaseio.com", // Verifique exatamente esta URL no seu painel
+  projectId: "trila-ads",
+  storageBucket: "trila-ads.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SEU_APP_ID"
+};
+
+// Inicializa o Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 // ---- Build day schedule ----
 function buildSchedule(){
@@ -242,7 +202,6 @@ function buildSchedule(){
     });
     days.push({ moduleId: mod.id, kind: 'desafio', title: mod.desafio });
   });
-  // Weave arch ciclos every 7 days as bonus task
   let cicloIdx = 0;
   days.forEach((d, i) => {
     if ((i+1) % 7 === 0 && cicloIdx < ARCH_CICLOS.length){
@@ -254,259 +213,40 @@ function buildSchedule(){
 }
 const SCHEDULE = buildSchedule();
 
-// ---- Storage helpers (localStorage — funciona em qualquer host estático) ----
-const STORE_KEY_PROGRESS = 'trilha_ads_progress';
-const STORE_KEY_START = 'trilha_ads_startDate';
-
+// ---- NOVAS FUNÇÕES DE ARMAZENAMENTO COM FIREBASE ----
 async function loadState(){
   let progress = {};
   let startDate = null;
-  try{
-    const raw = localStorage.getItem(STORE_KEY_PROGRESS);
-    if(raw) progress = JSON.parse(raw);
-  }catch(e){}
-  try{
-    startDate = localStorage.getItem(STORE_KEY_START);
-  }catch(e){}
+  
+  try {
+    // Busca em tempo real do banco de dados na nuvem
+    const snapshot = await db.ref('marcos_levi').once('value');
+    const data = snapshot.val();
+    if(data) {
+      progress = data.progress || {};
+      startDate = data.startDate;
+    }
+  } catch(e) {
+    console.error("Erro ao carregar dados do Firebase:", e);
+  }
+
   if(!startDate){
     startDate = new Date().toISOString().slice(0,10);
-    try{ localStorage.setItem(STORE_KEY_START, startDate); }catch(e){}
+    try {
+      await db.ref('marcos_levi/startDate').set(startDate);
+    } catch(e){}
   }
   return { progress, startDate };
 }
+
 async function saveProgress(progress){
-  try{ localStorage.setItem(STORE_KEY_PROGRESS, JSON.stringify(progress)); }catch(e){}
-}
-
-let STATE = { progress: {}, startDate: null, currentDay: 0 };
-
-function dayDate(idx){
-  const start = new Date(STATE.startDate + 'T00:00:00');
-  const d = new Date(start);
-  d.setDate(d.getDate() + idx);
-  return d;
-}
-function fmtDate(d){
-  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
-}
-function todayIndex(){
-  const start = new Date(STATE.startDate + 'T00:00:00');
-  const now = new Date(); now.setHours(0,0,0,0);
-  const diff = Math.floor((now - start) / 86400000);
-  return Math.max(0, diff);
-}
-
-function getDayProgress(idx){
-  return STATE.progress[idx] || {};
-}
-function dayTaskCount(idx){
-  const d = SCHEDULE[idx];
-  let n = 1; // principal/desafio
-  if(d.bonus) n++;
-  return n;
-}
-function dayDoneCount(idx){
-  const p = getDayProgress(idx);
-  let n = 0;
-  if(p.main) n++;
-  if(p.bonus) n++;
-  return n;
-}
-function dayStatus(idx){
-  const total = dayTaskCount(idx);
-  const done = dayDoneCount(idx);
-  if(done === 0) return 'none';
-  if(done === total) return 'done';
-  return 'partial';
-}
-
-function xpForTask(day, isBonus){
-  if(isBonus) return 5;
-  return day.kind === 'desafio' ? 25 : 10;
-}
-function totalXP(){
-  let xp = 0;
-  Object.keys(STATE.progress).forEach(k => {
-    const idx = parseInt(k);
-    const d = SCHEDULE[idx];
-    if(!d) return;
-    const p = STATE.progress[k];
-    if(p.main) xp += xpForTask(d, false);
-    if(p.bonus) xp += xpForTask(d, true);
-  });
-  return xp;
-}
-function currentStreak(){
-  const t = todayIndex();
-  let streak = 0;
-  for(let i = t; i >= 0; i--){
-    const p = getDayProgress(i);
-    if(p.main){ streak++; } else { break; }
+  try {
+    // Sincroniza o objeto de progresso diretamente no nó do banco
+    await db.ref('marcos_levi/progress').set(progress);
+  } catch(e) {
+    console.error("Erro ao salvar dados no Firebase:", e);
   }
-  return streak;
 }
-function moduleProgress(modId){
-  const idxs = [];
-  SCHEDULE.forEach((d,i) => { if(d.moduleId === modId) idxs.push(i); });
-  let total = 0, done = 0;
-  idxs.forEach(i => { total += dayTaskCount(i); done += dayDoneCount(i); });
-  return { pct: total ? Math.round(done/total*100) : 0, total, done };
-}
-
-function toggleTask(idx, key){
-  const p = STATE.progress[idx] || {};
-  p[key] = !p[key];
-  STATE.progress[idx] = p;
-  saveProgress(STATE.progress);
-  render();
-}
-
-function goToDay(idx){
-  if(idx < 0 || idx >= SCHEDULE.length) return;
-  STATE.currentDay = idx;
-  render();
-}
-
-function render(){
-  const app = document.getElementById('app');
-  const idx = STATE.currentDay;
-  const day = SCHEDULE[idx];
-  const mod = MODULES.find(m => m.id === day.moduleId);
-  const tIdx = todayIndex();
-  const xp = totalXP();
-  const level = Math.floor(xp / 100) + 1;
-  const streak = currentStreak();
-  const p = getDayProgress(idx);
-
-  // Trail nodes
-  let trailHTML = '';
-  SCHEDULE.forEach((d, i) => {
-    const status = dayStatus(i);
-    const cls = ['node'];
-    if(i === tIdx) cls.push('today');
-    if(i === idx) cls.push('active');
-    if(status === 'done') cls.push('done');
-    if(status === 'partial') cls.push('partial');
-    if(d.kind === 'desafio') cls.push('challenge');
-    const connectorDone = i > 0 && dayStatus(i-1) === 'done';
-    trailHTML += (i>0 ? `<div class="connector ${connectorDone?'done':''}"></div>` : '');
-    trailHTML += `<div class="${cls.join(' ')}" onclick="goToDay(${i})" title="Dia ${i+1} — Módulo ${d.moduleId}">${i+1}</div>`;
-  });
-
-  // Sidebar modules
-  let modulesHTML = '';
-  MODULES.forEach(m => {
-    const mp = moduleProgress(m.id);
-    modulesHTML += `
-      <div class="module-item ${m.id===mod.id?'current':''}" onclick="goToFirstDayOfModule(${m.id})">
-        <div class="mtitle"><span>${m.id}. ${m.name}</span><span>${mp.pct}%</span></div>
-        <div class="bar"><div class="bar-fill" style="width:${mp.pct}%"></div></div>
-      </div>`;
-  });
-
-  // Day tasks
-  const kindLabel = day.kind === 'desafio' ? 'Missão Desafio 🏆' : 'Missão Principal 🎯';
-  const kindClass = day.kind === 'desafio' ? 'desafio' : 'principal';
-  const mainXP = xpForTask(day, false);
-
-  let tasksHTML = `
-    <div class="task ${kindClass} ${p.main?'done':''}">
-      <input type="checkbox" ${p.main?'checked':''} onchange="toggleTask(${idx}, 'main')">
-      <div class="tt">
-        <div class="kind">${kindLabel}</div>
-        <div class="desc ${p.main?'strike':''}">${day.title}</div>
-      </div>
-      <div class="xp-chip">+${mainXP} XP</div>
-    </div>`;
-
-  if(day.bonus){
-    tasksHTML += `
-      <div class="task bonus ${p.bonus?'done':''}">
-        <input type="checkbox" ${p.bonus?'checked':''} onchange="toggleTask(${idx}, 'bonus')">
-        <div class="tt">
-          <div class="kind">Bônus · Arquitetura de Computadores</div>
-          <div class="desc ${p.bonus?'strike':''}">${day.bonus}</div>
-        </div>
-        <div class="xp-chip">+5 XP</div>
-      </div>`;
-  }
-
-  tasksHTML += `
-    <div class="task" style="background:transparent; border:1px dashed var(--line);">
-      <div class="tt">
-        <div class="kind">🧠 Revisão (Regra 2)</div>
-        <div class="desc" style="color:var(--muted)">Antes de marcar como concluído: explique o conteúdo de hoje em voz alta, sem consulting nada. Se não conseguir, ainda não aprendeu — revise antes de seguir.</div>
-      </div>
-    </div>`;
-
-  app.innerHTML = `
-    <header class="top">
-      <div>
-        <h1>Trilha ADS — Marcos Levi</h1>
-        <div class="sub">${SCHEDULE.length} dias · ${MODULES.length} módulos · rumo ao estágio</div>
-      </div>
-      <div class="stats">
-        <div class="stat level"><div class="n">Lv ${level}</div><div class="l">Nível</div></div>
-        <div class="stat"><div class="n">${xp}</div><div class="l">XP total</div></div>
-        <div class="stat streak"><div class="n">${streak}</div><div class="l">Streak</div></div>
-      </div>
-    </header>
-
-    <div class="trail-section">
-      <h2>Sua trilha</h2>
-      <div class="trail-scroll"><div class="trail">${trailHTML}</div></div>
-    </div>
-
-    <div class="layout">
-      <div class="panel modules">
-        <h2>Módulos</h2>
-        ${modulesHTML}
-      </div>
-
-      <div class="panel day-card">
-        <div class="day-head">
-          <div>
-            <div class="tag">Módulo ${mod.id} · ${mod.disciplina}</div>
-            <h2>Dia ${idx+1} — ${mod.name}</h2>
-            <div class="date">${fmtDate(dayDate(idx))}${idx===tIdx ? ' · hoje' : ''}</div>
-          </div>
-          <div class="nav-btns">
-            <button onclick="goToDay(${idx-1})" ${idx===0?'disabled':''}>← Anterior</button>
-            <button onclick="goToDay(${tIdx})">Hoje</button>
-            <button onclick="goToDay(${idx+1})" ${idx===SCHEDULE.length-1?'disabled':''}>Próximo →</button>
-          </div>
-        </div>
-        ${tasksHTML}
-      </div>
-    </div>
-
-    <footer>
-      Dados salvos automaticamente neste dispositivo. Progresso é só seu.
-      <br><button onclick="resetProgress()">Reiniciar progresso</button>
-    </footer>
-  `;
-}
-
-function goToFirstDayOfModule(modId){
-  const i = SCHEDULE.findIndex(d => d.moduleId === modId);
-  if(i >= 0) goToDay(i);
-}
-
-async function resetProgress(){
-  if(!confirm('Isso vai apagar todo o progresso salvo. Confirmar?')) return;
-  STATE.progress = {};
-  await saveProgress(STATE.progress);
-  render();
-}
-
-async function init(){
-  const { progress, startDate } = await loadState();
-  STATE.progress = progress;
-  STATE.startDate = startDate;
-  STATE.currentDay = Math.min(todayIndex(), SCHEDULE.length - 1);
-  render();
-}
-init();
 </script>
 </body>
 </html>
