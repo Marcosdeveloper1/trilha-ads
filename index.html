@@ -3,197 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilha ADS — Marcos Levi</title>
+<title>Trilha ADS + Redes — Marcos Levi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
-    --bg: #171422;
-    --panel: #211D33;
-    --panel-alt: #2A2440;
-    --line: #362F4D;
-    --text: #F1EDFB;
-    --muted: #9C93B8;
-    --gold: #E8B24D;
-    --teal: #5FD9C6;
-    --coral: #EF6F6C;
-    --radius: 14px;
+    --bg: #171422; --panel: #211D33; --panel-alt: #2A2440; --line: #362F4D;
+    --text: #F1EDFB; --muted: #9C93B8; --gold: #E8B24D; --teal: #5FD9C6; --coral: #EF6F6C;
+    --blue: #6FA8E8; --radius: 14px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+  body{ background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
   ::selection{ background: var(--gold); color: #171422; }
-
   a{ color: var(--teal); }
-
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
 
-  header.top{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    flex-wrap: wrap; gap: 16px;
-    margin-bottom: 28px;
-  }
-  header.top h1{
-    font-family:'Space Grotesk', sans-serif;
-    font-size: clamp(24px, 3.4vw, 34px);
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
+  .auth-wrap{ min-height: 100vh; display:flex; align-items:center; justify-content:center; padding: 20px; }
+  .auth-card{ background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; width: 100%; max-width: 380px; }
+  .auth-card h1{ font-family:'Space Grotesk', sans-serif; font-size: 22px; margin-bottom: 4px; }
+  .auth-card .sub{ color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .field input{ width: 100%; background: var(--panel-alt); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; color: var(--text); font-size: 14px; font-family: 'IBM Plex Sans', sans-serif; }
+  .field input:focus{ outline: none; border-color: var(--gold); }
+  .auth-btn{ width: 100%; background: var(--gold); color: #171422; border: none; border-radius: 8px; padding: 12px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 6px; }
+  .auth-btn:hover{ opacity: .92; } .auth-btn:disabled{ opacity: .5; cursor: not-allowed; }
+  .auth-toggle{ text-align:center; margin-top: 16px; font-size: 13px; color: var(--muted); }
+  .auth-toggle button{ background:none; border:none; color: var(--teal); cursor:pointer; font-size: 13px; text-decoration: underline; }
+  .auth-msg{ font-size: 13px; padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; }
+  .auth-msg.error{ background: rgba(239,111,108,0.12); color: var(--coral); }
+  .auth-msg.ok{ background: rgba(95,217,198,0.12); color: var(--teal); }
+
+  header.top{ display:flex; justify-content:space-between; align-items:flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  header.top h1{ font-family:'Space Grotesk', sans-serif; font-size: clamp(22px, 3.2vw, 32px); font-weight: 700; letter-spacing: -0.01em; }
   header.top .sub{ color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .logout-btn{ background: var(--panel-alt); border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 6px 12px; cursor:pointer; font-size: 12px; margin-top: 8px; }
+  .logout-btn:hover{ color: var(--coral); border-color: var(--coral); }
+  .sync-badge{ font-size: 11px; color: var(--teal); font-family:'JetBrains Mono', monospace; }
 
   .stats{ display:flex; gap: 10px; flex-wrap: wrap; }
-  .stat{
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    min-width: 92px;
-    text-align: center;
-  }
+  .stat{ background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 16px; min-width: 92px; text-align: center; }
   .stat .n{ font-family:'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; color: var(--gold); }
-  .stat.streak .n{ color: var(--coral); }
-  .stat.level .n{ color: var(--teal); }
+  .stat.streak .n{ color: var(--coral); } .stat.level .n{ color: var(--teal); }
   .stat .l{ font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
-  /* Trilha */
+  /* Track tabs */
+  .track-tabs{ display:flex; gap: 10px; margin-bottom: 26px; flex-wrap: wrap; }
+  .track-tab{
+    flex: 1; min-width: 220px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; cursor: pointer; transition: border-color .15s ease;
+  }
+  .track-tab:hover{ border-color: var(--muted); }
+  .track-tab.active{ border-color: var(--accent, var(--gold)); }
+  .track-tab .tt-name{ font-family:'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; display:flex; align-items:center; gap: 8px; }
+  .track-tab .tt-desc{ font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .track-tab .tt-bar{ height: 5px; background: var(--panel-alt); border-radius: 3px; overflow:hidden; margin-top: 10px; }
+  .track-tab .tt-bar-fill{ height:100%; border-radius: 3px; }
+  .track-tab .tt-pct{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .urgent-tag{ font-size: 9px; background: rgba(239,111,108,0.18); color: var(--coral); padding: 2px 7px; border-radius: 20px; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+
   .trail-section{ margin-bottom: 30px; }
-  .trail-section h2{
-    font-family:'Space Grotesk', sans-serif; font-size: 14px; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px;
-  }
-  .trail-scroll{
-    overflow-x: auto;
-    padding: 10px 4px 18px;
-    scrollbar-color: var(--line) transparent;
-  }
-  .trail{
-    display:flex; align-items:center; gap: 0; min-width: max-content;
-  }
-  .node-wrap{ display:flex; align-items:center; }
+  .trail-section h2{ font-family:'Space Grotesk', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+  .trail-scroll{ overflow-x: auto; padding: 10px 4px 18px; scrollbar-color: var(--line) transparent; }
+  .trail{ display:flex; align-items:center; gap: 0; min-width: max-content; }
   .connector{ width: 22px; height: 2px; background: var(--line); flex-shrink:0; }
   .connector.done{ background: var(--teal); }
-  .node{
-    width: 40px; height: 40px; border-radius: 10px;
-    border: 2px solid var(--line);
-    background: var(--panel);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
-    cursor: pointer; flex-shrink:0; position: relative;
-    transition: transform .12s ease, border-color .12s ease;
-  }
+  .node{ width: 40px; height: 40px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); cursor: pointer; flex-shrink:0; position: relative; transition: transform .12s ease, border-color .12s ease; }
   .node:hover{ transform: translateY(-3px); }
   .node.today{ border-color: var(--gold); color: var(--gold); }
   .node.partial{ border-color: var(--teal); color: var(--text); background: linear-gradient(135deg, var(--panel) 50%, rgba(95,217,198,0.18) 50%); }
   .node.done{ border-color: var(--teal); background: var(--teal); color: #12291F; font-weight: 700; }
-  .node.challenge::after{
-    content: '★'; position:absolute; top:-7px; right:-7px; font-size: 11px; color: var(--coral);
-  }
+  .node.challenge::after{ content: '★'; position:absolute; top:-7px; right:-7px; font-size: 11px; color: var(--coral); }
   .node.active{ outline: 2px solid var(--text); outline-offset: 2px; }
 
-  /* Layout */
   .layout{ display:grid; grid-template-columns: 260px 1fr; gap: 22px; }
   @media (max-width: 860px){ .layout{ grid-template-columns: 1fr; } }
-
-  .panel{
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 18px;
-  }
-
-  /* Sidebar módulos */
+  .panel{ background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
   .modules h2{ font-family:'Space Grotesk', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 14px; }
   .module-item{ margin-bottom: 14px; cursor: pointer; }
   .module-item .mtitle{ display:flex; justify-content:space-between; font-size: 13px; margin-bottom: 5px; }
   .module-item .mtitle span:first-child{ color: var(--text); }
   .module-item .mtitle span:last-child{ font-family:'JetBrains Mono', monospace; color: var(--muted); font-size:11px; }
   .bar{ height: 6px; background: var(--panel-alt); border-radius: 4px; overflow:hidden; }
-  .bar-fill{ height:100%; background: linear-gradient(90deg, var(--teal), var(--gold)); border-radius: 4px; transition: width .2s ease; }
+  .bar-fill{ height:100%; border-radius: 4px; transition: width .2s ease; }
   .module-item.current .mtitle span:first-child{ color: var(--gold); }
 
-  /* Main day card */
-  .day-card .day-head{
-    display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;
-    margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line);
-  }
-  .day-head .tag{
-    font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);
-    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
-  }
+  .day-card .day-head{ display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .day-head .tag{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
   .day-head h2{ font-family:'Space Grotesk', sans-serif; font-size: 22px; }
   .day-head .date{ color: var(--muted); font-size: 13px; font-family:'JetBrains Mono', monospace; }
   .nav-btns{ display:flex; gap: 8px; }
-  .nav-btns button{
-    background: var(--panel-alt); border: 1px solid var(--line); color: var(--text);
-    border-radius: 8px; padding: 8px 14px; cursor:pointer; font-size: 13px;
-    font-family: 'IBM Plex Sans', sans-serif;
-  }
+  .nav-btns button{ background: var(--panel-alt); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 8px 14px; cursor:pointer; font-size: 13px; font-family: 'IBM Plex Sans', sans-serif; }
   .nav-btns button:hover{ border-color: var(--gold); }
   .nav-btns button:disabled{ opacity: .35; cursor: not-allowed; }
 
-  .task{
-    display:flex; gap: 12px; align-items:flex-start;
-    padding: 14px; border-radius: 10px; background: var(--panel-alt);
-    margin-bottom: 12px; border: 1px solid transparent;
-  }
+  .task{ display:flex; gap: 12px; align-items:flex-start; padding: 14px; border-radius: 10px; background: var(--panel-alt); margin-bottom: 12px; border: 1px solid transparent; }
   .task.done{ border-color: var(--teal); }
-  .task input[type=checkbox]{
-    width: 20px; height: 20px; margin-top: 2px; accent-color: var(--teal); cursor:pointer; flex-shrink:0;
-  }
+  .task input[type=checkbox]{ width: 20px; height: 20px; margin-top: 2px; accent-color: var(--teal); cursor:pointer; flex-shrink:0; }
   .task .tt{ flex:1; }
   .task .kind{ font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 3px; }
   .task.principal .kind{ color: var(--gold); }
   .task.desafio .kind{ color: var(--coral); }
-  .task.bonus .kind{ color: var(--teal); }
   .task .desc{ font-size: 14.5px; line-height: 1.45; }
   .task .desc.strike{ text-decoration: line-through; color: var(--muted); }
-  .xp-chip{
-    font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);
-    background: rgba(232,178,77,0.12); padding: 2px 8px; border-radius: 20px; flex-shrink:0;
-  }
-
-  .empty-day{ text-align:center; padding: 40px 10px; color: var(--muted); }
-  .empty-day .big{ font-family:'Space Grotesk', sans-serif; font-size: 20px; color: var(--teal); margin-bottom: 6px; }
+  .xp-chip{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--gold); background: rgba(232,178,77,0.12); padding: 2px 8px; border-radius: 20px; flex-shrink:0; }
 
   footer{ text-align:center; color: var(--muted); font-size: 12px; margin-top: 40px; }
-  footer button{
-    background:none; border: 1px solid var(--line); color: var(--muted);
-    padding: 6px 12px; border-radius: 8px; cursor:pointer; font-size: 12px; margin-top: 10px;
-  }
-
+  footer button{ background:none; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 8px; cursor:pointer; font-size: 12px; margin-top: 10px; }
   .loading{ text-align:center; padding: 60px; color: var(--muted); }
 </style>
 </head>
 <body>
-<div class="wrap" id="app">
-  <div class="loading">Carregando trilha…</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<div id="root"><div class="loading">Carregando…</div></div>
 
 <script>
-// Suas credenciais reais salvas e organizadas
-const firebaseConfig = {
-  apiKey: "AIzaSyDpU6qfmL33bJ0oklLNFJyyH7OfEH3MgZg",
-  authDomain: "trila-ads.firebaseapp.com",
-  databaseURL: "https://trila-ads-default-rtdb.firebaseio.com",
-  projectId: "trila-ads",
-  storageBucket: "trila-ads.firebasestorage.app",
-  messagingSenderId: "1036814326395",
-  appId: "1:1036814326395:web:2f68a12ad69323634160de"
-};
+// ====== CONFIG SUPABASE ======
+const SUPABASE_URL = 'https://rvetrwxumxiekxqsfucz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZXRyd3h1bXhpZWt4cXNmdWN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MTcwOTUsImV4cCI6MjA5Mjk5MzA5NX0.4c6GHZ0jLjGPGJYThb8cBkxRp2Fjl4Z4687n6lyd90g';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Inicializando o Firebase com o Realtime Database
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const MODULES = [
+// ====== TRILHA ACADÊMICA (faculdade) ======
+const MODULES_ACADEMICA = [
   {id:1, name:"Ponteiros & Structs", disciplina:"Estrutura de Dados (C)",
     topics:["Ponteiros em C (& e *, por que existem)","Structs em C","Structs aninhadas, vetores de structs e typedef"],
     desafio:"Agenda de contatos em C usando vetor de structs (sem lista ligada ainda)."},
@@ -223,207 +154,265 @@ const MODULES = [
     desafio:"Validação de formulário + requisição AJAX simulada."},
   {id:10, name:"PHP + PDO", disciplina:"Dev Web",
     topics:["PHP básico e estruturas","Vetores e funções em PHP","Classe PDO e seus métodos","Integração HTML + PHP + banco"],
-    desafio:"Sistema de tickets funcional: cadastro, fila, ordenação por prioridade, busca. Projeto principal do semestre."},
+    desafio:"Sistema de tickets funcional: cadastro, fila, ordenação por prioridade, busca."},
   {id:11, name:"Paradigmas & Python Básico", disciplina:"Paradigmas (Python)",
     topics:["Categorias de linguagens e paradigmas","Tipos, expressões e atribuições em Python"],
-    desafio:"Reimplementar a fila de atendimento (Módulo 3) em Python — comparar com a versão em C."},
+    desafio:"Reimplementar a fila de atendimento (Módulo 3) em Python."},
   {id:12, name:"Python Estruturado", disciplina:"Paradigmas (Python)",
     topics:["Subprogramas e modularização em Python"],
     desafio:"Script utilitário: gerador de relatório CSV a partir do banco de tickets."},
   {id:13, name:"Python Orientado a Objetos", disciplina:"Paradigmas (Python)",
     topics:["Classes e objetos","Encapsulamento"],
-    desafio:"Modelar Ticket, Usuario e FilaAtendimento como classes — comparar com as structs do Módulo 1."},
+    desafio:"Modelar Ticket, Usuario e FilaAtendimento como classes."},
   {id:14, name:"Projeto Final & Revisão", disciplina:"Integração geral",
     topics:["Integrar frontend + backend + banco","Testar manualmente o fluxo completo","Documentar o projeto (README)","Simulado de entrevista técnica sobre o projeto"],
-    desafio:"Publicar o projeto no GitHub com README completo — peça de portfólio pronta."}
+    desafio:"Publicar o projeto no GitHub com README completo."}
 ];
-
 const ARCH_CICLOS = [
-  "Fundamentos e Evolução Computacional — história, hardware x software, SO como interface.",
   "Von Neumann — CPU, ULA, Unidade de Controle.",
-  "Processamento, memória e I/O — ciclo de busca/execução, hierarquia de memória.",
-  "Representação numérica — bit, byte, palavra, sistemas de numeração.",
-  "Conversão de bases e codificação — ASCII, Unicode.",
-  "Lógica digital — álgebra booleana, tabelas-verdade.",
-  "Circuitos lógicos — portas, circuitos combinacionais.",
-  "Processamento paralelo e HPC — taxonomia de Flynn.",
-  "Métricas de desempenho — Lei de Amdahl, clock, IPC.",
-  "RISC x CISC — comparativo e aplicações reais (ARM vs x86)."
+  "Hierarquia de memória e ciclo de busca/execução.",
+  "Sistemas de numeração e conversão de bases.",
+  "Lógica digital — álgebra booleana e portas lógicas.",
+  "Processamento paralelo — taxonomia de Flynn.",
+  "Métricas de desempenho — Lei de Amdahl.",
+  "RISC x CISC — comparativo e aplicações reais."
 ];
 
-function buildSchedule(){
+// ====== TRILHA REDES & SEGURANÇA (prioridade — estágio antes de sair do quartel) ======
+const MODULES_REDES = [
+  {id:15, name:"Fundamentos de Redes", disciplina:"Redes",
+    topics:["Modelo OSI x TCP/IP, camada por camada","Endereçamento IP (IPv4, máscara, público x privado)","Portas e protocolos (TCP/UDP, portas comuns: 80, 443, 22, 3389)"],
+    desafio:"Explicar em voz alta, camada por camada, o caminho de um pacote do seu PC até abrir um site."},
+  {id:16, name:"Sub-redes, DHCP e VLAN", disciplina:"Redes",
+    topics:["Cálculo de sub-rede (CIDR, máscara)","Processo DHCP completo (Discover, Offer, Request, Ack)","VLAN: conceito e por que segmentar rede"],
+    desafio:"Documentar formalmente (com prints e topologia) a instalação das câmeras PTZ que você já fez na igreja — vira peça de portfólio real."},
+  {id:17, name:"Infraestrutura Física & Monitoramento", disciplina:"Redes",
+    topics:["Cabeamento estruturado e patch panel","Servidor NAS (permissões, backup, volumes)","Zabbix e ferramentas de monitoramento de rede","Linux básico (ip a, netstat, ping, traceroute)"],
+    desafio:"Desenhar o diagrama de topologia de uma rede real que você conhece (casa ou igreja)."},
+  {id:18, name:"Ferramentas de Diagnóstico", disciplina:"Redes",
+    topics:["Wireshark: captura e leitura de pacotes","Nmap: scan de portas na própria rede","ping e traceroute avançado"],
+    desafio:"Capturar um handshake TCP de 3 vias no Wireshark e explicar cada etapa."},
+  {id:19, name:"Segurança de Redes", disciplina:"Cibersegurança",
+    topics:["Firewall: regras de entrada/saída (conceito Sophos/PFsense)","VPN: o que resolve e por quê","Ataques comuns: MITM, ARP spoofing, DDoS (conceito)"],
+    desafio:"Configurar firewall (UFW ou Windows Firewall) com regras específicas, documentado."},
+  {id:20, name:"OWASP Aplicado", disciplina:"Cibersegurança",
+    topics:["SQL Injection","XSS (Cross-Site Scripting)","Security Misconfiguration — seu próprio caso real"],
+    desafio:"Corrigir a vulnerabilidade do Firebase aberto no seu próprio dashboard, documentando antes/depois."},
+  {id:21, name:"Documentação & Entrevista", disciplina:"Preparação para estágio",
+    topics:["Redigir relatório técnico / as-built","Perguntas clássicas: DHCP, TCP x UDP, o que é um /24"],
+    desafio:"Simulado de entrevista técnica gravado (voz alta, sem consultar nada)."}
+];
+
+// ====== TRACKS CONFIG ======
+const TRACKS = {
+  academica: {
+    label: '🎓 Acadêmico', accent: '#E8B24D', modules: MODULES_ACADEMICA, ciclos: ARCH_CICLOS,
+    ciclosLabel: 'Arquitetura de Computadores', ciclosEvery: 7,
+    desc: 'Grade da faculdade — ritmo normal', urgent: false
+  },
+  redes: {
+    label: '🔒 Redes & Segurança', accent: '#EF6F6C', modules: MODULES_REDES, ciclos: [],
+    ciclosLabel: '', ciclosEvery: 999,
+    desc: 'Prioridade — precisa de estágio antes de sair do quartel', urgent: true
+  }
+};
+
+function buildSchedule(track){
   const days = [];
-  MODULES.forEach(mod => {
-    mod.topics.forEach((topic, i) => {
-      days.push({ moduleId: mod.id, kind: 'topic', title: topic });
-    });
+  track.modules.forEach(mod => {
+    mod.topics.forEach(topic => days.push({ moduleId: mod.id, kind: 'topic', title: topic }));
     days.push({ moduleId: mod.id, kind: 'desafio', title: mod.desafio });
   });
   let cicloIdx = 0;
   days.forEach((d, i) => {
-    if ((i+1) % 7 === 0 && cicloIdx < ARCH_CICLOS.length){
-      d.bonus = ARCH_CICLOS[cicloIdx];
-      cicloIdx++;
+    if ((i+1) % track.ciclosEvery === 0 && cicloIdx < track.ciclos.length){
+      d.bonus = track.ciclos[cicloIdx]; d.bonusLabel = track.ciclosLabel; cicloIdx++;
     }
   });
   return days;
 }
-const SCHEDULE = buildSchedule();
+Object.keys(TRACKS).forEach(k => { TRACKS[k].schedule = buildSchedule(TRACKS[k]); });
 
-// ---- NOVAS FUNÇÕES DE ARMAZENAMENTO COM FIREBASE ----
-async function loadState(){
-  let progress = {};
-  let startDate = null;
-  
-  try {
-    const snapshot = await db.ref('marcos_levi').once('value');
-    const data = snapshot.val();
-    if(data) {
-      progress = data.progress || {};
-      startDate = data.startDate;
-    }
-  } catch(e) {
-    console.error("Erro ao carregar dados do Firebase:", e);
-  }
+// ====== ESTADO ======
+let STATE = {
+  user: null,
+  currentTrack: 'redes', // prioridade urgente aberta por padrão
+  data: {
+    academica: { progress: {}, startDate: null, currentDay: 0 },
+    redes: { progress: {}, startDate: null, currentDay: 0 }
+  },
+  syncing: false
+};
+let AUTH_MODE = 'login';
 
+// ====== SUPABASE HELPERS ======
+async function fetchRow(userId, key){
+  const { data, error } = await sb.from('progress').select('value').eq('user_id', userId).eq('key', key).maybeSingle();
+  if(error){ console.error(error); return null; }
+  return data ? data.value : null;
+}
+async function upsertRow(userId, key, value){
+  STATE.syncing = true;
+  const { error } = await sb.from('progress').upsert({ user_id: userId, key, value, updated_at: new Date().toISOString() });
+  STATE.syncing = false;
+  if(error) console.error(error);
+}
+async function loadTrackData(userId, trackKey){
+  let progress = await fetchRow(userId, 'progress_' + trackKey);
+  let startDate = await fetchRow(userId, 'startDate_' + trackKey);
+  if(!progress) progress = {};
   if(!startDate){
     startDate = new Date().toISOString().slice(0,10);
-    try {
-      await db.ref('marcos_levi/startDate').set(startDate);
-    } catch(e){}
+    await upsertRow(userId, 'startDate_' + trackKey, startDate);
   }
-  return { progress, startDate };
+  STATE.data[trackKey].progress = progress;
+  STATE.data[trackKey].startDate = startDate;
+}
+async function saveProgress(trackKey){
+  await upsertRow(STATE.user.id, 'progress_' + trackKey, STATE.data[trackKey].progress);
 }
 
-async function saveProgress(progress){
-  try {
-    await db.ref('marcos_levi/progress').set(progress);
-  } catch(e) {
-    console.error("Erro ao salvar dados no Firebase:", e);
-  }
-}
+// ====== LÓGICA GENÉRICA (parametrizada por track) ======
+function td(trackKey){ return STATE.data[trackKey]; }
+function schedule(trackKey){ return TRACKS[trackKey].schedule; }
 
-let STATE = { progress: {}, startDate: null, currentDay: 0 };
-
-function dayDate(idx){
-  const start = new Date(STATE.startDate + 'T00:00:00');
-  const d = new Date(start);
-  d.setDate(d.getDate() + idx);
+function dayDate(trackKey, idx){
+  const start = new Date(td(trackKey).startDate + 'T00:00:00');
+  const d = new Date(start); d.setDate(d.getDate() + idx);
   return d;
 }
-function fmtDate(d){
-  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
-}
-function todayIndex(){
-  const start = new Date(STATE.startDate + 'T00:00:00');
+function fmtDate(d){ return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' }); }
+function todayIndex(trackKey){
+  const start = new Date(td(trackKey).startDate + 'T00:00:00');
   const now = new Date(); now.setHours(0,0,0,0);
-  const diff = Math.floor((now - start) / 86400000);
-  return Math.max(0, diff);
+  return Math.max(0, Math.floor((now - start) / 86400000));
 }
-
-function getDayProgress(idx){
-  return STATE.progress[idx] || {};
-}
-function dayTaskCount(idx){
-  const d = SCHEDULE[idx];
-  let n = 1; 
-  if(d.bonus) n++;
+function getDayProgress(trackKey, idx){ return td(trackKey).progress[idx] || {}; }
+function dayTaskCount(trackKey, idx){ return schedule(trackKey)[idx].bonus ? 2 : 1; }
+function dayDoneCount(trackKey, idx){
+  const p = getDayProgress(trackKey, idx); let n = 0;
+  if(p.main) n++; if(p.bonus) n++;
   return n;
 }
-function dayDoneCount(idx){
-  const p = getDayProgress(idx);
-  let n = 0;
-  if(p.main) n++;
-  if(p.bonus) n++;
-  return n;
-}
-function dayStatus(idx){
-  const total = dayTaskCount(idx);
-  const done = dayDoneCount(idx);
+function dayStatus(trackKey, idx){
+  const total = dayTaskCount(trackKey, idx), done = dayDoneCount(trackKey, idx);
   if(done === 0) return 'none';
   if(done === total) return 'done';
   return 'partial';
 }
-
-function xpForTask(day, isBonus){
-  if(isBonus) return 5;
-  return day.kind === 'desafio' ? 25 : 10;
-}
-function totalXP(){
+function xpForTask(day, isBonus){ if(isBonus) return 5; return day.kind === 'desafio' ? 25 : 10; }
+function totalXP(trackKey){
   let xp = 0;
-  Object.keys(STATE.progress).forEach(k => {
-    const idx = parseInt(k);
-    const d = SCHEDULE[idx];
+  const sch = schedule(trackKey);
+  Object.keys(td(trackKey).progress).forEach(k => {
+    const idx = parseInt(k), d = sch[idx];
     if(!d) return;
-    const p = STATE.progress[k];
+    const p = td(trackKey).progress[k];
     if(p.main) xp += xpForTask(d, false);
     if(p.bonus) xp += xpForTask(d, true);
   });
   return xp;
 }
-function currentStreak(){
-  const t = todayIndex();
-  let streak = 0;
-  for(let i = t; i >= 0; i--){
-    const p = getDayProgress(i);
-    if(p.main){ streak++; } else { break; }
-  }
+function currentStreak(trackKey){
+  const t = todayIndex(trackKey); let streak = 0;
+  for(let i = t; i >= 0; i--){ if(getDayProgress(trackKey, i).main) streak++; else break; }
   return streak;
 }
-function moduleProgress(modId){
-  const idxs = [];
-  SCHEDULE.forEach((d,i) => { if(d.moduleId === modId) idxs.push(i); });
+function overallProgress(trackKey){
+  const sch = schedule(trackKey);
   let total = 0, done = 0;
-  idxs.forEach(i => { total += dayTaskCount(i); done += dayDoneCount(i); });
-  return { pct: total ? Math.round(done/total*100) : 0, total, done };
+  sch.forEach((d,i) => { total += dayTaskCount(trackKey, i); done += dayDoneCount(trackKey, i); });
+  return total ? Math.round(done/total*100) : 0;
+}
+function moduleProgress(trackKey, modId){
+  const sch = schedule(trackKey);
+  const idxs = []; sch.forEach((d,i) => { if(d.moduleId === modId) idxs.push(i); });
+  let total = 0, done = 0;
+  idxs.forEach(i => { total += dayTaskCount(trackKey, i); done += dayDoneCount(trackKey, i); });
+  return { pct: total ? Math.round(done/total*100) : 0 };
 }
 
-function toggleTask(idx, key){
-  const p = STATE.progress[idx] || {};
+async function toggleTask(trackKey, idx, key){
+  const p = td(trackKey).progress[idx] || {};
   p[key] = !p[key];
-  STATE.progress[idx] = p;
-  saveProgress(STATE.progress);
-  render();
+  td(trackKey).progress[idx] = p;
+  renderApp();
+  await saveProgress(trackKey);
+  renderApp();
 }
-
-function goToDay(idx){
-  if(idx < 0 || idx >= SCHEDULE.length) return;
-  STATE.currentDay = idx;
-  render();
+function goToDay(trackKey, idx){
+  if(idx < 0 || idx >= schedule(trackKey).length) return;
+  td(trackKey).currentDay = idx;
+  renderApp();
 }
+function goToFirstDayOfModule(trackKey, modId){
+  const i = schedule(trackKey).findIndex(d => d.moduleId === modId);
+  if(i >= 0) goToDay(trackKey, i);
+}
+function switchTrack(trackKey){
+  STATE.currentTrack = trackKey;
+  renderApp();
+}
+async function resetProgress(trackKey){
+  if(!confirm('Isso vai apagar o progresso salvo dessa trilha na nuvem. Confirmar?')) return;
+  td(trackKey).progress = {};
+  await saveProgress(trackKey);
+  renderApp();
+}
+async function logout(){ await sb.auth.signOut(); render(); }
 
-function render(){
-  const app = document.getElementById('app');
-  const idx = STATE.currentDay;
-  const day = SCHEDULE[idx];
-  const mod = MODULES.find(m => m.id === day.moduleId);
-  const tIdx = todayIndex();
-  const xp = totalXP();
+// ====== RENDER: APP ======
+function renderApp(){
+  const root = document.getElementById('root');
+  const trackKey = STATE.currentTrack;
+  const track = TRACKS[trackKey];
+  const idx = td(trackKey).currentDay;
+  const sch = schedule(trackKey);
+  const day = sch[idx];
+  const mod = track.modules.find(m => m.id === day.moduleId);
+  const tIdx = todayIndex(trackKey);
+  const xp = totalXP(trackKey);
   const level = Math.floor(xp / 100) + 1;
-  const streak = currentStreak();
-  const p = getDayProgress(idx);
+  const streak = currentStreak(trackKey);
+  const p = getDayProgress(trackKey, idx);
 
+  // Tabs
+  let tabsHTML = '';
+  Object.keys(TRACKS).forEach(k => {
+    const t = TRACKS[k];
+    const pct = overallProgress(k);
+    tabsHTML += `
+      <div class="track-tab ${k===trackKey?'active':''}" style="--accent:${t.accent}" onclick="switchTrack('${k}')">
+        <div class="tt-name">${t.label} ${t.urgent ? '<span class="urgent-tag">Prioridade</span>' : ''}</div>
+        <div class="tt-desc">${t.desc}</div>
+        <div class="tt-bar"><div class="tt-bar-fill" style="width:${pct}%; background:${t.accent}"></div></div>
+        <div class="tt-pct">${pct}% concluído</div>
+      </div>`;
+  });
+
+  // Trail
   let trailHTML = '';
-  SCHEDULE.forEach((d, i) => {
-    const status = dayStatus(i);
+  sch.forEach((d, i) => {
+    const status = dayStatus(trackKey, i);
     const cls = ['node'];
     if(i === tIdx) cls.push('today');
     if(i === idx) cls.push('active');
     if(status === 'done') cls.push('done');
     if(status === 'partial') cls.push('partial');
     if(d.kind === 'desafio') cls.push('challenge');
-    const connectorDone = i > 0 && dayStatus(i-1) === 'done';
+    const connectorDone = i > 0 && dayStatus(trackKey, i-1) === 'done';
     trailHTML += (i>0 ? `<div class="connector ${connectorDone?'done':''}"></div>` : '');
-    trailHTML += `<div class="${cls.join(' ')}" onclick="goToDay(${i})" title="Dia ${i+1} — Módulo ${d.moduleId}">${i+1}</div>`;
+    trailHTML += `<div class="${cls.join(' ')}" onclick="goToDay('${trackKey}', ${i})" title="Dia ${i+1} — Módulo ${d.moduleId}">${i+1}</div>`;
   });
 
+  // Sidebar modules
   let modulesHTML = '';
-  MODULES.forEach(m => {
-    const mp = moduleProgress(m.id);
+  track.modules.forEach(m => {
+    const mp = moduleProgress(trackKey, m.id);
     modulesHTML += `
-      <div class="module-item ${m.id===mod.id?'current':''}" onclick="goToFirstDayOfModule(${m.id})">
+      <div class="module-item ${m.id===mod.id?'current':''}" onclick="goToFirstDayOfModule('${trackKey}', ${m.id})">
         <div class="mtitle"><span>${m.id}. ${m.name}</span><span>${mp.pct}%</span></div>
-        <div class="bar"><div class="bar-fill" style="width:${mp.pct}%"></div></div>
+        <div class="bar"><div class="bar-fill" style="width:${mp.pct}%; background:${track.accent}"></div></div>
       </div>`;
   });
 
@@ -433,7 +422,7 @@ function render(){
 
   let tasksHTML = `
     <div class="task ${kindClass} ${p.main?'done':''}">
-      <input type="checkbox" ${p.main?'checked':''} onchange="toggleTask(${idx}, 'main')">
+      <input type="checkbox" ${p.main?'checked':''} onchange="toggleTask('${trackKey}', ${idx}, 'main')">
       <div class="tt">
         <div class="kind">${kindLabel}</div>
         <div class="desc ${p.main?'strike':''}">${day.title}</div>
@@ -443,10 +432,10 @@ function render(){
 
   if(day.bonus){
     tasksHTML += `
-      <div class="task bonus ${p.bonus?'done':''}">
-        <input type="checkbox" ${p.bonus?'checked':''} onchange="toggleTask(${idx}, 'bonus')">
+      <div class="task ${p.bonus?'done':''}" style="border-color:${p.bonus?track.accent:'transparent'}">
+        <input type="checkbox" ${p.bonus?'checked':''} onchange="toggleTask('${trackKey}', ${idx}, 'bonus')">
         <div class="tt">
-          <div class="kind">Bônus · Arquitetura de Computadores</div>
+          <div class="kind" style="color:${track.accent}">Bônus · ${day.bonusLabel}</div>
           <div class="desc ${p.bonus?'strike':''}">${day.bonus}</div>
         </div>
         <div class="xp-chip">+5 XP</div>
@@ -457,80 +446,126 @@ function render(){
     <div class="task" style="background:transparent; border:1px dashed var(--line);">
       <div class="tt">
         <div class="kind">🧠 Revisão (Regra 2)</div>
-        <div class="desc" style="color:var(--muted)">Antes de marcar como concluído: explique o conteúdo de hoje em voz alta, sem consultar nada. Se não conseguir, ainda não aprendeu — revise antes de seguir.</div>
+        <div class="desc" style="color:var(--muted)">Antes de marcar como concluído: explique o conteúdo de hoje em voz alta, sem consultar nada. Se não conseguir, ainda não aprendeu.</div>
       </div>
     </div>`;
 
-  app.innerHTML = `
-    <header class="top">
-      <div>
-        <h1>Trilha ADS — Marcos Levi</h1>
-        <div class="sub">${SCHEDULE.length} dias · ${MODULES.length} módulos · rumo ao estágio</div>
-      </div>
-      <div class="stats">
-        <div class="stat level"><div class="n">Lv ${level}</div><div class="l">Nível</div></div>
-        <div class="stat"><div class="n">${xp}</div><div class="l">XP total</div></div>
-        <div class="stat streak"><div class="n">${streak}</div><div class="l">Streak</div></div>
-      </div>
-    </header>
-
-    <div class="trail-section">
-      <h2>Sua trilha</h2>
-      <div class="trail-scroll"><div class="trail">${trailHTML}</div></div>
-    </div>
-
-    <div class="layout">
-      <div class="panel modules">
-        <h2>Módulos</h2>
-        ${modulesHTML}
-      </div>
-
-      <div class="panel day-card">
-        <div class="day-head">
-          <div>
-            <div class="tag">Módulo ${mod.id} · ${mod.disciplina}</div>
-            <h2>Dia ${idx+1} — ${mod.name}</h2>
-            <div class="date">${fmtDate(dayDate(idx))}${idx===tIdx ? ' · hoje' : ''}</div>
-          </div>
-          <div class="nav-btns">
-            <button onclick="goToDay(${idx-1})" ${idx===0?'disabled':''}>← Anterior</button>
-            <button onclick="goToDay(todayIndex())">Hoje</button>
-            <button onclick="goToDay(${idx+1})" ${idx===SCHEDULE.length-1?'disabled':''}>Próximo →</button>
-          </div>
+  root.innerHTML = `
+    <div class="wrap">
+      <header class="top">
+        <div>
+          <h1>Trilha de Estudos — Marcos Levi</h1>
+          <div class="sub">Acadêmico + Redes &amp; Segurança rodando em paralelo</div>
+          <div class="sync-badge">${STATE.syncing ? '⏳ sincronizando…' : '☁️ sincronizado — ' + STATE.user.email}</div>
+          <button class="logout-btn" onclick="logout()">Sair</button>
         </div>
-        ${tasksHTML}
-      </div>
-    </div>
+        <div class="stats">
+          <div class="stat level"><div class="n">Lv ${level}</div><div class="l">Nível</div></div>
+          <div class="stat"><div class="n">${xp}</div><div class="l">XP · ${track.label.replace(/^\S+\s/,'')}</div></div>
+          <div class="stat streak"><div class="n">${streak}</div><div class="l">Streak</div></div>
+        </div>
+      </header>
 
-    <footer>
-      Sincronizado via Firebase Realtime Database.
-      <br><button onclick="resetProgress()">Reiniciar progresso</button>
-    </footer>
+      <div class="track-tabs">${tabsHTML}</div>
+
+      <div class="trail-section">
+        <h2>Trilha — ${track.label}</h2>
+        <div class="trail-scroll"><div class="trail">${trailHTML}</div></div>
+      </div>
+
+      <div class="layout">
+        <div class="panel modules">
+          <h2>Módulos</h2>
+          ${modulesHTML}
+        </div>
+
+        <div class="panel day-card">
+          <div class="day-head">
+            <div>
+              <div class="tag">Módulo ${mod.id} · ${mod.disciplina}</div>
+              <h2>Dia ${idx+1} — ${mod.name}</h2>
+              <div class="date">${fmtDate(dayDate(trackKey, idx))}${idx===tIdx ? ' · hoje' : ''}</div>
+            </div>
+            <div class="nav-btns">
+              <button onclick="goToDay('${trackKey}', ${idx-1})" ${idx===0?'disabled':''}>← Anterior</button>
+              <button onclick="goToDay('${trackKey}', ${tIdx})">Hoje</button>
+              <button onclick="goToDay('${trackKey}', ${idx+1})" ${idx===sch.length-1?'disabled':''}>Próximo →</button>
+            </div>
+          </div>
+          ${tasksHTML}
+        </div>
+      </div>
+
+      <footer>
+        Progresso salvo na nuvem, sincronizado entre todos os seus dispositivos.
+        <br><button onclick="resetProgress('${trackKey}')">Reiniciar progresso desta trilha</button>
+      </footer>
+    </div>
   `;
 }
 
-function goToFirstDayOfModule(modId){
-  const i = SCHEDULE.findIndex(d => d.moduleId === modId);
-  if(i >= 0) goToDay(i);
+// ====== RENDER: AUTH ======
+function renderAuth(message){
+  const root = document.getElementById('root');
+  const isSignup = AUTH_MODE === 'signup';
+  root.innerHTML = `
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <h1>Trilha ADS</h1>
+        <div class="sub">${isSignup ? 'Criar sua conta' : 'Entrar na sua trilha'}</div>
+        ${message ? `<div class="auth-msg ${message.type}">${message.text}</div>` : ''}
+        <div class="field"><label>E-mail</label><input type="email" id="authEmail" placeholder="seu@email.com" autocomplete="email"></div>
+        <div class="field"><label>Senha</label><input type="password" id="authPassword" placeholder="mínimo 6 caracteres" autocomplete="${isSignup?'new-password':'current-password'}"></div>
+        <button class="auth-btn" id="authSubmitBtn" onclick="handleAuthSubmit()">${isSignup ? 'Criar conta' : 'Entrar'}</button>
+        <div class="auth-toggle">
+          ${isSignup ? 'Já tem conta?' : 'Ainda não tem conta?'}
+          <button onclick="toggleAuthMode()">${isSignup ? 'Entrar' : 'Criar conta'}</button>
+        </div>
+      </div>
+    </div>`;
+}
+function toggleAuthMode(){ AUTH_MODE = AUTH_MODE === 'signup' ? 'login' : 'signup'; renderAuth(); }
+async function handleAuthSubmit(){
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const btn = document.getElementById('authSubmitBtn');
+  if(!email || !password){ renderAuth({type:'error', text:'Preencha e-mail e senha.'}); return; }
+  btn.disabled = true;
+  if(AUTH_MODE === 'signup'){
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error){ renderAuth({type:'error', text: traduzErro(error.message)}); return; }
+    if(data.session){ await startAppFor(data.session.user); }
+    else { AUTH_MODE = 'login'; renderAuth({type:'ok', text:'Conta criada! Verifique seu e-mail para confirmar antes de entrar.'}); }
+  } else {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ renderAuth({type:'error', text: traduzErro(error.message)}); return; }
+    await startAppFor(data.user);
+  }
+}
+function traduzErro(msg){
+  if(msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
+  if(msg.includes('already registered')) return 'Esse e-mail já tem conta. Tente entrar.';
+  if(msg.includes('Password should be')) return 'Senha muito curta (mínimo 6 caracteres).';
+  return msg;
 }
 
-async function resetProgress(){
-  if(!confirm('Isso vai apagar todo o progresso salvo na nuvem. Confirmar?')) return;
-  STATE.progress = {};
-  try {
-    await db.ref('marcos_levi').set({});
-    render();
-  } catch(e){}
+async function startAppFor(user){
+  STATE.user = user;
+  document.getElementById('root').innerHTML = '<div class="loading">Carregando suas trilhas…</div>';
+  await loadTrackData(user.id, 'academica');
+  await loadTrackData(user.id, 'redes');
+  td('academica').currentDay = Math.min(todayIndex('academica'), schedule('academica').length - 1);
+  td('redes').currentDay = Math.min(todayIndex('redes'), schedule('redes').length - 1);
+  renderApp();
 }
 
-async function init(){
-  const { progress, startDate } = await loadState();
-  STATE.progress = progress;
-  STATE.startDate = startDate;
-  STATE.currentDay = Math.min(todayIndex(), SCHEDULE.length - 1);
-  render();
+// ====== INIT ======
+async function render(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(session && session.user){ await startAppFor(session.user); }
+  else { AUTH_MODE = 'login'; renderAuth(); }
 }
-init();
+render();
 </script>
 </body>
 </html>
