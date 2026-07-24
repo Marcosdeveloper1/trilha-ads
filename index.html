@@ -48,7 +48,6 @@
   .stat.streak .n{ color: var(--coral); } .stat.level .n{ color: var(--teal); }
   .stat .l{ font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
-  /* Track tabs */
   .track-tabs{ display:flex; gap: 10px; margin-bottom: 26px; flex-wrap: wrap; }
   .track-tab{
     flex: 1; min-width: 220px; background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
@@ -197,7 +196,7 @@ const MODULES_REDES = [
     desafio:"Configurar firewall (UFW ou Windows Firewall) com regras específicas, documentado."},
   {id:20, name:"OWASP Aplicado", disciplina:"Cibersegurança",
     topics:["SQL Injection","XSS (Cross-Site Scripting)","Security Misconfiguration — seu próprio caso real"],
-    desafio:"Corrigir a vulnerabilidade do Firebase aberto no seu próprio dashboard, documentando antes/depois."},
+    desafio:"Corrigir a vulnerabilidade do banco aberto no seu próprio dashboard, documentando antes/depois."},
   {id:21, name:"Documentação & Entrevista", disciplina:"Preparação para estágio",
     topics:["Redigir relatório técnico / as-built","Perguntas clássicas: DHCP, TCP x UDP, o que é um /24"],
     desafio:"Simulado de entrevista técnica gravado (voz alta, sem consultar nada)."}
@@ -220,40 +219,63 @@ const MODULES_SEM2 = [
   {id:26, name:"Métodos de Demonstração", disciplina:"Matemática e Lógica",
     topics:["Demonstração trivial, por vacuidade e direta","Demonstração por contradição (redução ao absurdo)","Princípio da indução matemática (fraca e forte)"],
     desafio:"Demonstrar por indução uma fórmula de somatório e explicar a prova em voz alta, sem consultar nada (Regra 2)."},
-  {id:27, name:"Fundamentos de Java & OO", disciplina:"Programação Orientada a Objetos em Java",
-    topics:["Classes, objetos, atributos e métodos","Encapsulamento — getters/setters","Herança e polimorfismo","Interfaces e classes abstratas"],
-    desafio:"Modelar em Java o sistema de tickets (Ticket, Usuario, FilaAtendimento) usando herança e polimorfismo."},
-  {id:28, name:"Coleções e Exceções em Java", disciplina:"Programação Orientada a Objetos em Java",
-    topics:["ArrayList, LinkedList e HashMap","Generics","Tratamento de exceções (try/catch/finally)"],
-    desafio:"Reimplementar a fila de atendimento (Módulo 3, em C) usando Queue/LinkedList do Java — comparar os dois paradigmas."},
-  {id:29, name:"Ciclo de Vida de Software", disciplina:"Engenharia de Software",
+
+  {id:27, name:"POO Básica em Java", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Classes, objetos, atributos e métodos","Construtores e sobrecarga de construtores","Encapsulamento: modificadores de acesso, getters e setters"],
+    desafio:"Modelar a classe Personagem (nome, classe, nível, vida, poder) com construtor e exibirStatus() — sem if/for dentro da classe."},
+  {id:28, name:"Herança e Polimorfismo em Java", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Herança com extends e super","Polimorfismo dinâmico (métodos sobrescritos)","Classes abstratas, métodos abstratos e o modificador final"],
+    desafio:"Criar hierarquia Personagem → Mago/Guerreiro com usarHabilidade() sobrescrito em cada subclasse."},
+  {id:29, name:"Coleções e Agrupamento de Dados em Java", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["List, Set, Map, Queue e Deque — quando usar cada um","Associação, agregação e composição entre objetos","Stream API e Collectors.groupingBy","Comparable e Comparator para ordenação"],
+    desafio:"Agrupar uma lista de Tickets por status com Collectors.groupingBy e ordenar por prioridade com Comparator."},
+  {id:30, name:"Fundamentos Avançados de OO", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Princípio da substituição de Liskov (subclasse x subtipo)","Tipagem estática x dinâmica e vinculação dinâmica de métodos","instanceof, upcasting e downcasting seguro","Visibilidade de variáveis em hierarquias (private/protected/public)"],
+    desafio:"Refatorar a hierarquia Personagem respeitando Liskov, e usar instanceof + downcasting com segurança."},
+  {id:31, name:"Contratos de Objeto e Interfaces", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Sobrescrita de toString(), equals() e hashCode()","O contrato equals/hashCode em HashSet e HashMap","Interfaces como contrato e herança múltipla","Diferença entre interface e classe abstrata"],
+    desafio:"Sobrescrever equals/hashCode em Ticket (dois tickets iguais se mesmo ID) e criar uma interface Auditavel."},
+  {id:32, name:"Exceções em Java", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Hierarquia Throwable: Error x Exception, checked x unchecked","try/catch/finally e try-with-resources","Exceções personalizadas e encadeamento (getCause)"],
+    desafio:"Criar TicketInvalidoException e tratar corretamente no fluxo de cadastro de tickets."},
+  {id:33, name:"Concorrência: Threads e Sincronização", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Thread x Runnable, threads user x daemon, ciclo de vida","Condição de corrida, deadlock e starvation","Sincronização: synchronized, semáforos, wait()/notify()","Objetos imutáveis, ExecutorService, Callable e Future"],
+    desafio:"Simular duas threads processando a fila de tickets ao mesmo tempo com acesso sincronizado, sem duplicar atendimento."},
+  {id:34, name:"Persistência com JDBC e DAO", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Arquitetura em camadas: front-end, back-end, middleware","JDBC: DriverManager, Connection, Statement/PreparedStatement, ResultSet","Padrão DAO (GenericDAO) e mapeamento objeto-relacional manual"],
+    desafio:"Criar TicketDAO com JDBC puro: inserir, listar e remover tickets do banco de dados."},
+  {id:35, name:"JPA e Persistência Moderna", disciplina:"Programação Orientada a Objetos em Java",
+    topics:["Entidades JPA: @Entity, @Id, @Column, @NamedQuery","persistence.xml e EntityManager","Transações: begin/commit/rollback","DAO + JPA combinados"],
+    desafio:"Migrar o TicketDAO para usar JPA/EntityManager, com controle de transação e rollback em caso de erro."},
+
+  {id:36, name:"Ciclo de Vida de Software", disciplina:"Engenharia de Software",
     topics:["Modelos de processo: cascata, incremental, espiral","Levantamento e especificação de requisitos","Testes de software: unitário e integração"],
     desafio:"Escrever um documento de requisitos (funcionais e não funcionais) para o sistema de tickets."},
-  {id:30, name:"Qualidade de Software", disciplina:"Engenharia de Software",
+  {id:37, name:"Qualidade de Software", disciplina:"Engenharia de Software",
     topics:["Métricas de qualidade (ISO/IEC 25010)","Revisão de código e refatoração","Controle de versão com Git — branches e commits"],
     desafio:"Fazer code review do próprio projeto guarda-chuva, listando 5 pontos de melhoria e refatorando pelo menos 1."},
-  {id:31, name:"Fundamentos do Scrum", disciplina:"Métodos Ágeis com Scrum",
+  {id:38, name:"Fundamentos do Scrum", disciplina:"Métodos Ágeis com Scrum",
     topics:["Papéis: Product Owner, Scrum Master e Time de Desenvolvimento","Eventos: Sprint, Daily, Sprint Review e Retrospectiva","Artefatos: Product Backlog, Sprint Backlog e Incremento"],
     desafio:"Criar um Product Backlog para o sistema de tickets com pelo menos 10 histórias de usuário."},
-  {id:32, name:"Scrum na Prática", disciplina:"Métodos Ágeis com Scrum",
+  {id:39, name:"Scrum na Prática", disciplina:"Métodos Ágeis com Scrum",
     topics:["Estimativa — Planning Poker e story points","Kanban e fluxo de trabalho (WIP)","Ferramentas de gestão ágil (Trello, Jira)"],
-    desafio:"Montar um quadro Kanban (Trello) com o backlog criado no Módulo 31 e simular uma sprint."},
-  {id:33, name:"IHC e Heurísticas de Usabilidade", disciplina:"Engenharia de Usabilidade",
+    desafio:"Montar um quadro Kanban (Trello) com o backlog criado no Módulo 38 e simular uma sprint."},
+  {id:40, name:"IHC e Heurísticas de Usabilidade", disciplina:"Engenharia de Usabilidade",
     topics:["As 10 heurísticas de Nielsen","Design centrado no usuário","Usabilidade x Acessibilidade — diferenças"],
     desafio:"Avaliar a interface do sistema de tickets aplicando as 10 heurísticas de Nielsen, uma a uma."},
-  {id:34, name:"Testes de Usabilidade", disciplina:"Engenharia de Usabilidade",
+  {id:41, name:"Testes de Usabilidade", disciplina:"Engenharia de Usabilidade",
     topics:["Protótipos de baixa e alta fidelidade","Testes com usuários e métricas de UX (SUS, taxa de erro)"],
     desafio:"Criar um protótipo de baixa fidelidade de uma nova tela e testar com pelo menos 1 pessoa real."},
-  {id:35, name:"Alinhamento Estratégico de SI", disciplina:"Sistemas de Informação",
+  {id:42, name:"Alinhamento Estratégico de SI", disciplina:"Sistemas de Informação",
     topics:["Sistemas de Informação e vantagem competitiva (modelo de Porter)","Tipos de sistemas: ERP, CRM e BI","Alinhamento entre TI e estratégia de negócio"],
     desafio:"Analisar como o sistema de tickets geraria vantagem competitiva para uma empresa fictícia."},
-  {id:36, name:"Gestão da Informação", disciplina:"Sistemas de Informação",
+  {id:43, name:"Gestão da Informação", disciplina:"Sistemas de Informação",
     topics:["Governança de TI","Segurança da informação e LGPD","Tomada de decisão orientada a dados (data-driven)"],
     desafio:"Levantar quais dados do sistema de tickets são sensíveis segundo a LGPD e como protegê-los."},
-  {id:37, name:"Acessibilidade Digital como Direito", disciplina:"Sociedade, Cultura e Direitos Humanos",
+  {id:44, name:"Acessibilidade Digital como Direito", disciplina:"Sociedade, Cultura e Direitos Humanos",
     topics:["Direitos humanos e inclusão digital","WCAG — diretrizes de acessibilidade web","Tecnologia assistiva"],
     desafio:"Auditar a acessibilidade (WCAG) da interface do próprio sistema de tickets e corrigir pelo menos 2 problemas."},
-  {id:38, name:"Cultura, Sociedade e Tecnologia", disciplina:"Sociedade, Cultura e Direitos Humanos",
+  {id:45, name:"Cultura, Sociedade e Tecnologia", disciplina:"Sociedade, Cultura e Direitos Humanos",
     topics:["Ética em tecnologia e vieses algorítmicos","Impacto social da tecnologia","Cidadania digital"],
     desafio:"Escrever uma reflexão curta sobre um caso real de viés algorítmico e como mitigá-lo."}
 ];
@@ -273,7 +295,7 @@ const TRACKS = {
   sem2: {
     label: '📘 Novo Semestre', accent: '#6FA8E8', modules: MODULES_SEM2, ciclos: [],
     ciclosLabel: '', ciclosEvery: 999,
-    desc: '7 disciplinas abertas em 24/07 — Java, Matemática/Lógica, Eng. Software, Scrum, Usabilidade, SI, Direitos Humanos', urgent: false
+    desc: '6 disciplinas abertas em 24/07 — Java (POO completo), Matemática/Lógica, Eng. Software, Scrum, Usabilidade, SI, Direitos Humanos', urgent: false
   }
 };
 
@@ -437,7 +459,6 @@ function renderApp(){
   const streak = currentStreak(trackKey);
   const p = getDayProgress(trackKey, idx);
 
-  // Tabs
   let tabsHTML = '';
   Object.keys(TRACKS).forEach(k => {
     const t = TRACKS[k];
@@ -451,7 +472,6 @@ function renderApp(){
       </div>`;
   });
 
-  // Trail
   let trailHTML = '';
   sch.forEach((d, i) => {
     const status = dayStatus(trackKey, i);
@@ -466,7 +486,6 @@ function renderApp(){
     trailHTML += `<div class="${cls.join(' ')}" onclick="goToDay('${trackKey}', ${i})" title="Dia ${i+1} — Módulo ${d.moduleId}">${i+1}</div>`;
   });
 
-  // Sidebar modules
   let modulesHTML = '';
   track.modules.forEach(m => {
     const mp = moduleProgress(trackKey, m.id);
@@ -516,7 +535,7 @@ function renderApp(){
       <header class="top">
         <div>
           <h1>Trilha de Estudos — Marcos Levi</h1>
-          <div class="sub">Acadêmico + Redes &amp; Segurança rodando em paralelo</div>
+          <div class="sub">Acadêmico + Redes &amp; Segurança + Novo Semestre — 3 trilhas em paralelo</div>
           <div class="sync-badge">${STATE.syncing ? '⏳ sincronizando…' : '☁️ sincronizado — ' + STATE.user.email}</div>
           <button class="logout-btn" onclick="logout()">Sair</button>
         </div>
