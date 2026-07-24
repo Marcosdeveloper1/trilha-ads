@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard ADS 2026 v2.0</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --text: #f8fafc;
+    --accent: #38bdf8;
+    --success: #4ade80;
+    --border: #334155;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h1 { color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
+  .card h3 { margin-top: 0; color: var(--accent); }
+  .progress-bar { background: var(--border); border-radius: 4px; height: 10px; width: 100%; margin: 10px 0; overflow: hidden; }
+  .progress { background: var(--success); height: 100%; width: 0%; transition: width 0.3s ease; }
+  label { display: block; margin: 8px 0; cursor: pointer; font-size: 14px; }
+  input[type="checkbox"] { margin-right: 8px; }
+</style>
+</head>
+<body>
+
+  <h1>⚡ CodeCraft Quest - Painel de Controle Semestral</h1>
+  <p>Marcos Levi | Acompanhamento de Metas de Código e Engenharia</p>
+
+  <div class="grid">
+    <div class="card" id="c1">
+      <h3>Ciclo 1: Core & Lógica em Java</h3>
+      <div class="progress-bar"><div class="progress" id="p1"></div></div>
+      <label><input type="checkbox" onclick="updateProgress('c1', 'p1')"> Classes de Proposição Criadas</label>
+      <label><input type="checkbox" onclick="updateProgress('c1', 'p1')"> Interpretador de Tabela-Verdade funcional</label>
+      <label><input type="checkbox" onclick="updateProgress('c1', 'p1')"> Gravação da Explicação Oral concluída</label>
+    </div>
+
+    <div class="card" id="c2">
+      <h3>Ciclo 2: JPA & Engenharia de Software</h3>
+      <div class="progress-bar"><div class="progress" id="p2"></div></div>
+      <label><input type="checkbox" onclick="updateProgress('c2', 'p2')"> Modelagem Relacional de Regras</label>
+      <label><input type="checkbox" onclick="updateProgress('c2', 'p2')"> Repositórios JPA implementados</label>
+      <label><input type="checkbox" onclick="updateProgress('c2', 'p2')"> Requisitos documentados no GitHub</label>
+    </div>
+
+    <div class="card" id="c3">
+      <h3>Ciclo 3: Concorrência (Threads) & Scrum</h3>
+      <div class="progress-bar"><div class="progress" id="p3"></div></div>
+      <label><input type="checkbox" onclick="updateProgress('c3', 'p3')"> Simulação Paralela Multi-thread</label>
+      <label><input type="checkbox" onclick="updateProgress('c3', 'p3')"> Sincronização e proteção de concorrência</label>
+      <label><input type="checkbox" onclick="updateProgress('c3', 'p3')"> Organização e controle de Sprints</label>
+    </div>
+
+    <div class="card" id="c4">
+      <h3>Ciclo 4: Usabilidade & Inclusão Web</h3>
+      <div class="progress-bar"><div class="progress" id="p4"></div></div>
+      <label><input type="checkbox" onclick="updateProgress('c4', 'p4')"> Frontend com acessibilidade estruturada</label>
+      <label><input type="checkbox" onclick="updateProgress('c4', 'p4')"> Validação das 10 Heurísticas de Nielsen</label>
+      <label><input type="checkbox" onclick="updateProgress('c4', 'p4')"> Deploy do Portfólio Integrado</label>
+    </div>
+  </div>
+
+<script>
+  function updateProgress(cardId, progressId) {
+    const card = document.getElementById(cardId);
+    const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+    const checked = card.querySelectorAll('input[type="checkbox"]:checked');
+    const percentage = (checked.length / checkboxes.length) * 100;
+    document.getElementById(progressId).style.width = percentage + '%';
+  }
+</script>
+</body>
+</html>
